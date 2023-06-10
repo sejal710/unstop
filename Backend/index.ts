@@ -31,9 +31,15 @@ app.get("/",(req: Request,res: Response):void => {
     res.send("Welcome TO THE HOME PAGE CREATING BY DEAR SEJAL JAISWAL")
 })
 
-app.get("/data",async(req: Request,res: Response) => {
+app.get("/seats",async(req: Request,res: Response) => {
   try{
-    let data = await SeatModel.find();
+    const { isBooked } = req.query;
+    let query = {};
+
+    if (isBooked) {
+      query = { isBooked: isBooked === "true" };
+    }
+    let data = await SeatModel.find(query);
     res.send(data)
   }
   catch(e: any){
@@ -41,80 +47,51 @@ app.get("/data",async(req: Request,res: Response) => {
   }
 })
 
-app.patch('/seats', async (req: Request, res: Response) => {
-  const numberOfSeats = req.body.seats;
-
+app.patch("/seats/reset", async (req: Request, res: Response) => {
   try {
-    const availableSeats = await SeatModel.find({ isBooked: false }).sort('seatNumber');
-
-    let consecutiveSeatsCount = 0;
-    let consecutiveSeatsStartIndex = -1;
-    let consecutiveSeatsRow = '';
-    let bookedSeats = [];
-
-    for (let i = 0; i < availableSeats.length; i++) {
-      const currentSeat = availableSeats[i];
-      const previousSeat = availableSeats[i - 1];
-
-      if (previousSeat && previousSeat.seatNumber.charAt(0) === currentSeat.seatNumber.charAt(0)) {
-        // Consecutive seat in the same row
-        if (consecutiveSeatsCount === 0) {
-          // Start of a new consecutive seat range
-          consecutiveSeatsStartIndex = i - 1;
-          consecutiveSeatsCount = 2;
-        } else {
-          // Continuation of the consecutive seat range
-          consecutiveSeatsCount++;
-        }
-
-        if (consecutiveSeatsCount === numberOfSeats) {
-          // Found required number of consecutive seats in the same row
-          consecutiveSeatsRow = currentSeat.seatNumber.charAt(0);
-          break;
-        }
-      } else {
-        // Reset consecutive seat count when the row changes
-        consecutiveSeatsCount = 0;
-      }
-    }
-
-    if (consecutiveSeatsRow) {
-      // Book consecutive seats in the same row
-      bookedSeats = availableSeats
-        .slice(consecutiveSeatsStartIndex, consecutiveSeatsStartIndex + consecutiveSeatsCount)
-        .map(seat => seat._id);
-
-      await SeatModel.updateMany({ _id: { $in: bookedSeats } }, { $set: { isBooked: true } });
-    } else {
-      // Book seats from multiple rows
-      const rows = new Set(availableSeats.map(seat => seat.seatNumber.charAt(0)));
-      const rowsArray = Array.from(rows);
-      let rowIndex = 0;
-
-      while (bookedSeats.length < numberOfSeats && rowIndex < rowsArray.length) {
-        const row = rowsArray[rowIndex];
-        const rowSeats = availableSeats.filter(seat => seat.seatNumber.charAt(0) === row);
-
-        if (rowSeats.length >= numberOfSeats) {
-          // Sufficient consecutive seats available in this row
-          bookedSeats = rowSeats.slice(0, numberOfSeats).map(seat => seat._id);
-        } else {
-          // Insufficient consecutive seats in this row, book available seats
-          bookedSeats.push(...rowSeats.map(seat  => seat._id));
-        }
-
-        rowIndex++;
-      }
-
-      await SeatModel.updateMany({ _id: { $in: bookedSeats } }, { $set: { isBooked: true } });
-    }
-
-    return res.json({ message: `${numberOfSeats} seats booked successfully.`, bookedSeats });
+    await SeatModel.updateMany({}, { $set: { isBooked: false } });
+    return res.json({ message: "All seats reset to false." });
   } catch (error: any) {
-    console.error('Error booking seats:', error);
-    return res.status(500).json({ error: 'An error occurred while booking seats.' });
+    console.error("Error resetting seats:", error);
+    return res.status(500).json({ error: "An error occurred while resetting seats." });
   }
 });
+
+app.patch('/seats', async (req: Request, res: Response) => {
+  const seatNumbers = req.body.seats;
+
+  try {
+    const bookedSeats: string[] = [];
+
+    for (const seatNumber of seatNumbers) {
+      
+      const seat = await SeatModel.findOne({ seatNumber });
+
+     
+      if (!seat) {
+        return res.status(404).json({ error: `Seat ${seatNumber} not found.` });
+      }
+
+      
+      if (seat.isBooked) {
+        return res.status(400).json({ error: `Seat ${seatNumber} is already booked.` });
+      }
+
+      
+      seat.isBooked = true;
+      await seat.save();
+
+      
+      bookedSeats.push(seatNumber);
+    }
+
+    return res.json({ message: `Seats ${bookedSeats.join(', ')} have been booked successfully.` });
+  } catch (error: any) {
+    console.error('Error booking seats:', error);
+    return res.status(500).json({ error: 'An error occurred while booking the seats.' });
+  }
+});
+
 
 
 
