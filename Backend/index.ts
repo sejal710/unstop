@@ -1,8 +1,7 @@
-
-const express = require("express");
-const cors = require("cors");
-const {connect,connection} = require("./db");
-const {seatModel,seatSchema} = require('./Model/seat.model.js');
+import express,{ Request, Response } from 'express';
+import cors from 'cors';
+import { connect, connection } from './db';
+import { SeatModel,seatSchema } from './Model/seat.model';
 
 const app = express();
 app.use(express.json());
@@ -11,38 +10,42 @@ app.use(cors());
 (async () => {
   try {
     await connect();
-    const seatsExist = await seatModel.findOne();
+    const seatsExist = await SeatModel.findOne();
     if (!seatsExist) {
-      await seatModel.createSeats();
-      console.log("Seats created successfully.");
+      const seats = [];
+      for (let i = 1; i <= 80; i++) {
+        seats.push({ seatNumber: i.toString(), isBooked: false });
+      }
+      await SeatModel.collection.insertMany(seats);
+      console.log('Seats created successfully.');
     } else {
-      console.log("Seats already exist.");
+      console.log('Seats already exist.');
     }
   } catch (error) {
-    console.error("Error creating seats:", error);
+    console.error('Error creating seats:', error);
   }
 })();
 
 
-app.get("/",(req,res) => {
+app.get("/",(req: Request,res: Response):void => {
     res.send("Welcome TO THE HOME PAGE CREATING BY DEAR SEJAL JAISWAL")
 })
 
-app.get("/data",async(req,res) => {
+app.get("/data",async(req: Request,res: Response) => {
   try{
-    let data = await seatModel.find();
+    let data = await SeatModel.find();
     res.send(data)
   }
-  catch(e){
+  catch(e: any){
     res.send({Message:e.message})
   }
 })
 
-app.patch('/seats', async (req, res) => {
+app.patch('/seats', async (req: Request, res: Response) => {
   const numberOfSeats = req.body.seats;
 
   try {
-    const availableSeats = await seatModel.find({ isBooked: false }).sort('seatNumber');
+    const availableSeats = await SeatModel.find({ isBooked: false }).sort('seatNumber');
 
     let consecutiveSeatsCount = 0;
     let consecutiveSeatsStartIndex = -1;
@@ -81,7 +84,7 @@ app.patch('/seats', async (req, res) => {
         .slice(consecutiveSeatsStartIndex, consecutiveSeatsStartIndex + consecutiveSeatsCount)
         .map(seat => seat._id);
 
-      await seatModel.updateMany({ _id: { $in: bookedSeats } }, { $set: { isBooked: true } });
+      await SeatModel.updateMany({ _id: { $in: bookedSeats } }, { $set: { isBooked: true } });
     } else {
       // Book seats from multiple rows
       const rows = new Set(availableSeats.map(seat => seat.seatNumber.charAt(0)));
@@ -97,29 +100,30 @@ app.patch('/seats', async (req, res) => {
           bookedSeats = rowSeats.slice(0, numberOfSeats).map(seat => seat._id);
         } else {
           // Insufficient consecutive seats in this row, book available seats
-          bookedSeats.push(...rowSeats.map(seat => seat._id));
+          bookedSeats.push(...rowSeats.map(seat  => seat._id));
         }
 
         rowIndex++;
       }
 
-      await seatModel.updateMany({ _id: { $in: bookedSeats } }, { $set: { isBooked: true } });
+      await SeatModel.updateMany({ _id: { $in: bookedSeats } }, { $set: { isBooked: true } });
     }
 
     return res.json({ message: `${numberOfSeats} seats booked successfully.`, bookedSeats });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error booking seats:', error);
     return res.status(500).json({ error: 'An error occurred while booking seats.' });
   }
 });
 
-app.listen(process.env.PORT,async(req,res) => {
-    console.log(`Server is runing in ${process.env.PORT}`);
-    try{
-        await connection;
-        console.log("DB is connected");
-    }
-    catch(e){
-        console.log("Error Message",e.message);
-    }
-})
+
+
+app.listen(process.env.PORT, async(): Promise<void> => {
+  console.log(`Server is running on port ${process.env.PORT}`);
+  try {
+      await connection;
+      console.log("DB is connected");
+  } catch (e: any) {
+      console.log("Error Message", e.message);
+  }
+});
