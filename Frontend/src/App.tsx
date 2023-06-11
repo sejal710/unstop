@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const [data,setData] = useState([])
 
   async function getData(){
-    let api = await fetch(` https://travel-block.onrender.com/seats`);
+    let api = await fetch(`https://travel-block.onrender.com/seats`);
     let fetched = await api.json()
     setData(fetched)
   }
@@ -28,6 +28,7 @@ const App: React.FC = () => {
       <Navbar getData={getData}/>
       <Train data={data} />
       <Reset getData={getData}/>
+      <h1 className="app_h1">Created By Sejal Jaiswal🧡🧡🧡</h1>
     </div>
   )
 }

@@ -35,7 +35,10 @@ const Reset:React.FC<ResetProps > = ({getData}) => {
         });
     }
   return (
-    <button onClick={handleReset}> Reset</button>
+    <div className='reset'>
+      <button className='reset_button' onClick={handleReset}>Reset</button>
+    </div>
+    
   );
 };
 

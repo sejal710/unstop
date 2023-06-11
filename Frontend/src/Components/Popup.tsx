@@ -17,7 +17,7 @@ const Popup: React.FC<PopupProps> = ({setpopup,getData}) => {
     const handleSubmit = (e : any) => {
       e.preventDefault();
       const value ={name:name,seats:seats}
-      fetch(` https://travel-block.onrender.com/seats`, {
+      fetch(`https://travel-block.onrender.com/seats`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
