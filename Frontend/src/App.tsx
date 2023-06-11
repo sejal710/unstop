@@ -18,7 +18,7 @@ const App: React.FC = () => {
   }
   useEffect(()=>{
     getData();
-  },[getData])
+  },[])
   if(data.length === 0){
     return <Loading />
   }
