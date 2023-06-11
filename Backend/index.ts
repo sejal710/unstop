@@ -76,12 +76,20 @@ app.patch('/seats', async (req: Request, res: Response) => {
       { $addFields: { seatNumber: { $toInt: "$seatNumber" } } },
       { $sort: { seatNumber: 1 } }
     ]);
-
-    let k = 1, index = 0;
+    if(availableSeats.length === 0){
+      res.send({SeatNumber:"Sorry Seats are not available"})
+    }
     let bookedSeats: string[] = [];
     let seatsBook: number[] = []
+
+    if(seats === 0 && availableSeats.length !== 0){
+      bookedSeats.push(availableSeats[0]._id);
+      seatsBook.push(availableSeats[0].seatNumber);
+    }
+    else{
+    let k = 1, index = 0;
     for (let i = 1; i <= 12; i++) {
-      let count = 0;
+      let count = 1;
       let length = i === 12 ? 3 : 7;
       bookedSeats = [];
       seatsBook = []
@@ -103,11 +111,11 @@ app.patch('/seats', async (req: Request, res: Response) => {
         break;
       }
     }
-     let count =0;
+     let count =1;
     if(bookedSeats.length === 0){
       for(let i=1;i<=80;i++){
         if(seats > count) break;
-        if(availableSeats[i] !== undefined){
+        if(availableSeats[i] !== undefined && count <= seats){
           bookedSeats.push(availableSeats[i]._id);
           seatsBook.push(availableSeats[i].seatNumber)
           count++;
@@ -118,7 +126,8 @@ app.patch('/seats', async (req: Request, res: Response) => {
         return ;
       }
     }
-    // Update the documents
+   }
+    
     const result = await SeatModel.updateMany(
       { _id: { $in: bookedSeats } },
       { $set: { isBooked: true, name } }
@@ -130,6 +139,9 @@ app.patch('/seats', async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'An error occurred while booking the seats.' });
   }
 });
+
+
+
 
 
 app.listen(process.env.PORT, async(): Promise<void> => {
