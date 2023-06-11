@@ -6,18 +6,22 @@ import React,{useState,useEffect} from "react"
 import Reset from "./Components/Reset"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from "./Components/Loading"
 
 const App: React.FC = () => {
   const [data,setData] = useState([])
 
   async function getData(){
-    let api = await fetch("http://localhost:8080/seats");
+    let api = await fetch(` https://travel-block.onrender.com/seats`);
     let fetched = await api.json()
     setData(fetched)
   }
   useEffect(()=>{
     getData();
-  },[])
+  },[getData])
+  if(data.length === 0){
+    return <Loading />
+  }
   return (
     <div className='app'>
       <ToastContainer />

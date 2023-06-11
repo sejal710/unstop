@@ -9,7 +9,7 @@ interface ResetProps{
 
 const Reset:React.FC<ResetProps > = ({getData}) => {
     const handleReset = () => {
-        fetch(`http://localhost:8080/seats/reset`, {
+        fetch(`https://travel-block.onrender.com/seats/reset`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
