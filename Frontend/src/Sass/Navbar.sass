@@ -1,0 +1,54 @@
+.navbar 
+  position: fixed
+  z-index:1
+  display: flex
+  width: 100%
+  justify-content: space-between
+  background-color: #D32F2F
+  color: #fff
+  padding: 20px 
+  font-size: 20px
+  font-weight: bold
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2)
+  animation: navbarAnimation 1s ease-in-out infinite alternate
+  margin-bottom:50px
+
+  &-title 
+    margin-left: 10px
+    animation: titleAnimation 1s ease-in-out infinite alternate
+
+  &-button 
+    margin-right: 10px
+    animation: buttonAnimation 0.5s ease-in-out infinite
+
+    button 
+      background-color: #fff
+      color: #333
+      padding: 8px 16px
+      font-size: 16px
+      border: none
+      border-radius: 4px
+      cursor: pointer
+      transition: background-color 0.3s ease-in-out
+
+      &:hover 
+        background-color: #EF5350
+        color:#fff
+
+@keyframes navbarAnimation
+  0% 
+    transform: translateY(0)
+  100% 
+    transform: translateY(-5px)
+
+@keyframes titleAnimation
+  0% 
+    transform: scale(1)
+  100% 
+    transform: scale(1.1)
+
+@keyframes buttonAnimation
+  0% 
+    transform: rotate(0)
+  100% 
+    transform: rotate(2deg)

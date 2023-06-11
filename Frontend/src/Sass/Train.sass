@@ -1,31 +1,39 @@
-// Train.sass
 
-.train
+.head
+ position:absolute
+ z-index:-1
+ padding:20px 0px
+
+
+.train 
+  padding: 60px 10px
   display: flex
-  flex-wrap: wrap
-  justify-content: center
   align-items: center
-  gap: 10px
+  min-height: calc(100vh - 100px)
 
-  .engine
-    background-color: #000
-    width: 80px
-    height: 200px
-    border-radius: 10px
-    margin-right: 20px
+.engine 
+  width: 200px
+  min-height: 100vh
+  background-image: url('https://i.pinimg.com/originals/d1/ef/6e/d1ef6e73d6149ee3744d788184f9acdf.jpg')
+  background-repeat: no-repeat
+  background-size: cover
+  margin-bottom: 10px
 
-  .carriages
-    display: flex
-    flex-wrap: wrap
-    gap: 10px
-    width: 600px
 
-    .seat
-      background-color: #777
-      width: 40px
-      height: 40px
-      display: flex
-      justify-content: center
-      align-items: center
-      font-weight: bold
-      color: #FFF
+.carriages 
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  grid-template-rows: repeat(12, 1fr)
+  gap: 5px
+  width:100%
+  height:80%
+
+
+
+
+
+
+
+  
+
+

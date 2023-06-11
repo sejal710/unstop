@@ -1,0 +1,71 @@
+// Popup.sass
+
+.popup 
+  position: fixed
+  top: 0
+  left: 0
+  z-index:1
+  width: 100vw
+  height: 100vh
+  background-color: rgba(0, 0, 0, 0.5)
+  display: flex
+  justify-content: center
+  align-items: center
+
+
+.popup-content 
+  background-color: #FFF
+  padding: 20px
+  border-radius: 4px
+
+
+.popup-close 
+  background-color: #D32F2F
+  color: #fff
+  border: none
+  padding: 8px 16px
+  border-radius: 4px
+  cursor: pointer
+
+  &-icon
+   width: 20px
+   height: 20px
+   stroke: currentColor
+   stroke-width: 2px
+   fill: none
+
+
+.popup-close:hover 
+  background-color: #9A0007
+
+
+.popup-form 
+  margin-top: 20px
+
+
+.popup-form input,
+.popup-form select,
+.popup-form button 
+  margin-bottom: 10px
+
+
+.popup-form input,
+.popup-form select 
+  width: 100%
+  padding: 8px
+  border: 1px solid #DDD
+  border-radius: 4px
+
+
+.popup-form button 
+  background-color: #D32F2F
+  color: #FFF
+  border: none
+  padding: 8px 16px
+  border-radius: 4px
+  cursor: pointer
+
+
+.popup-form button:hover 
+  background-color: #9A0007
+
