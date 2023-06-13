@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const [data,setData] = useState([])
 
   async function getData(){
-    let api = await fetch(`https://travel-block.onrender.com/seats`);
+    let api = await fetch(`https://unstop-iq6m.vercel.app/seats`);
     let fetched = await api.json()
     setData(fetched)
   }
